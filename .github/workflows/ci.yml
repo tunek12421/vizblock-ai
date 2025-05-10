@@ -1,6 +1,10 @@
 # .github/workflows/ci.yml
 name: CI
 
+# Para que GITHUB_TOKEN pueda crear releases
+permissions:
+  contents: write
+
 on:
   push:
     branches: [main]
