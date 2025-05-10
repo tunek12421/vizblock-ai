@@ -22,7 +22,7 @@ jobs:
       - name: ♻️  Cache pnpm store
         uses: actions/cache@v4
         with:
-          path: ~/.pnpm-store
+          path: ~/.local/share/pnpm/store
           key: ${{ runner.os }}-pnpm-${{ hashFiles('pnpm-lock.yaml') }}
 
       # 3) Instalar Node 20 + activar pnpm
@@ -48,8 +48,9 @@ jobs:
       - name: 🧪  Test (Vitest)
         run: pnpm test -- --run
 
-      - name: 🛠️  Build (todos los targets)
-        run: pnpm build
+      - name: 🛠️ Build extension app
+        run: pnpm nx build extension
+
 
       # 5) Empaquetar extensión (CRX/ZIP)
       - name: 📦  Pack extension ZIP
