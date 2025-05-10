@@ -1,0 +1,79 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash
+
+    steps:
+      # 1) Checkout repositorio
+      - name: ⬇️  Checkout
+        uses: actions/checkout@v4
+
+      # 2) Cache pnpm + Nx
+      - name: ♻️  Cache pnpm store
+        uses: actions/cache@v4
+        with:
+          path: ~/.pnpm-store
+          key: ${{ runner.os }}-pnpm-${{ hashFiles('pnpm-lock.yaml') }}
+
+      # 3) Instalar Node 20 + pnpm
+      - name: 🟢  Setup Node LTS 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'pnpm'
+
+      - name: 📦  Install deps
+        run: |
+          corepack enable
+          pnpm install --frozen-lockfile
+
+      # 4) Lint + test + build (Nx tasks paralelos)
+      - name: 🔍  Lint
+        run: pnpm lint
+
+      - name: 🧪  Test (Vitest)
+        run: pnpm test -- --run
+
+      - name: 🛠️  Build (todos los targets)
+        run: pnpm build
+
+      # 5) Empaquetar extensión (CRX/ZIP)
+      - name: 📦  Pack extension ZIP
+        run: |
+          cd dist/apps/extension
+          zip -r ../../vizblock-extension.zip .
+          echo "ARTIFACT_PATH=$(pwd)/../../vizblock-extension.zip" >> $GITHUB_ENV
+
+      - name: 🚀  Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: vizblock-extension
+          path: ${{ env.ARTIFACT_PATH }}
+
+      # 6) (Opcional) Publicar en Releases al hacer tag semver
+  release:
+    if: startsWith(github.ref, 'refs/tags/')
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: 🔖  Download extension artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: vizblock-extension
+          path: .
+
+      - name: 🚢  Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: vizblock-extension.zip
+          generate_release_notes: true
