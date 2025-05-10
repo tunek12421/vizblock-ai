@@ -17,6 +17,8 @@ jobs:
       # 1) Checkout repositorio
       - name: ⬇️ Checkout
         uses: actions/checkout@v4
+        with:
+          path: .
 
       # 2) Cache pnpm store
       - name: ♻️ Cache pnpm store
