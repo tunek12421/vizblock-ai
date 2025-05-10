@@ -1,0 +1,36 @@
+{
+  "name": "@vizblock-ai/source",
+  "version": "0.0.0",
+  "license": "MIT",
+  "scripts": {
+    "dev": "nx run extension:dev",
+    "build": "nx run-many --target build --all",
+    "lint": "nx affected --target=lint --parallel",
+    "test": "nx affected --target=test --parallel",
+    "format": "nx format:write",
+    "release": "pnpm build && node tools/release.js"
+  },
+  
+  "private": true,
+  "devDependencies": {
+    "@commitlint/config-conventional": "^19.8.1",
+    "@nx/eslint-plugin": "^21.0.3",
+    "@nx/js": "21.0.3",
+    "@nx/linter": "^19.8.4",
+    "@nx/react": "^21.0.3",
+    "@nx/vite": "^21.0.3",
+    "@nx/workspace": "21.0.3",
+    "@typescript-eslint/eslint-plugin": "^8.32.0",
+    "@typescript-eslint/parser": "^8.32.0",
+    "commitlint": "^19.8.1",
+    "eslint": "^9.26.0",
+    "eslint-config-prettier": "^10.1.5",
+    "eslint-plugin-import": "^2.31.0",
+    "husky": "^9.1.7",
+    "lint-staged": "^16.0.0",
+    "nx": "21.0.3",
+    "prettier": "^3.5.3",
+    "ts-node": "^10.9.2",
+    "vitest": "^3.1.3"
+  }
+}
