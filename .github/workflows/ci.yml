@@ -4,7 +4,7 @@ name: CI
 on:
   push:
     branches: [main]
-    tags: ['*']      # para que se dispare el job de release al pushear tags
+    tags: ['*']      # dispara también el job de release al pushear tags semánticos
   pull_request:
     branches: [main]
 
@@ -16,38 +16,38 @@ jobs:
         shell: bash
 
     steps:
-      # 1) Checkout
+      # 1) Checkout completo para poder usar git history en Nx affected
       - name: ⬇️ Checkout
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0 
+          fetch-depth: 0
 
-      # 2) Setup Node LTS 20 (sin cache: pnpm)
+      # 2) Instalar Node 20
       - name: 🟢 Setup Node LTS 20
         uses: actions/setup-node@v4
         with:
           node-version: '20'
 
-      # 3) Cache pnpm store manual
+      # 3) Cache manual de la store de pnpm
       - name: ♻️ Cache pnpm store
         uses: actions/cache@v4
         with:
           path: ~/.local/share/pnpm/store
           key: ${{ runner.os }}-pnpm-${{ hashFiles('pnpm-lock.yaml') }}
 
-      # 4) Enable Corepack (trae pnpm CLI)
+      # 4) Activar Corepack (trae pnpm listo para usar)
       - name: 🛠 Enable Corepack
         run: |
           corepack enable
           echo "pnpm version: $(pnpm -v)"
 
-      # 5) Instalar dependencias
+      # 5) Instalar dependencias estrictamente según lockfile
       - name: 📦 Install dependencies
         run: pnpm install --frozen-lockfile
 
-      # 6) Lint / Test / Build
-      - name: 🔍 Lint all projects
-        run: pnpm nx run-many --target=lint --all
+      # 6) Lint con autofix, Test y Build
+      - name: 🔍 Lint all projects (auto-fix)
+        run: pnpm nx run-many --target=lint --all --fix
 
       - name: 🧪 Test all projects
         run: pnpm nx run-many --target=test --all

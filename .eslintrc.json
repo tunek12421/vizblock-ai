@@ -1,9 +1,8 @@
 // .eslintrc.json
 {
   "root": true,
-  // ignoro solamente node_modules y dist, no todo
+  // ya no bloqueamos todo, solo carpetas de salida
   "ignorePatterns": ["node_modules/**", "dist/**"],
-
   "plugins": ["@typescript-eslint", "import"],
   "extends": [
     "plugin:@nx/typescript",
@@ -12,12 +11,10 @@
     "plugin:import/typescript",
     "prettier"
   ],
-
   "rules": {
     "import/order": ["error", { "newlines-between": "always" }],
     "@typescript-eslint/explicit-function-return-type": "off"
   },
-
   "overrides": [
     {
       "files": ["*.ts", "*.tsx", "*.js", "*.jsx"],
