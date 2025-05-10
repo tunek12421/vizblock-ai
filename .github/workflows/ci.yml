@@ -14,18 +14,15 @@ jobs:
         shell: bash
 
     steps:
-      # 1) Checkout repositorio
       - name: ⬇️ Checkout
         uses: actions/checkout@v4
 
-      # 2) Cache pnpm store
       - name: ♻️ Cache pnpm store
         uses: actions/cache@v4
         with:
           path: ~/.local/share/pnpm/store
-          key: ${{ runner.os }}-pnpm-${{ hashFiles('pnpm-lock.yaml') }}
+          key: ${{ runner.os }}-pnpm-${{ hashFiles('**/pnpm-lock.yaml') }}
 
-      # 3) Setup Node + pnpm (versiones compatibles con lockfile v9)
       - name: 🟢 Setup Node LTS 20
         uses: actions/setup-node@v4
         with:
@@ -34,16 +31,20 @@ jobs:
       - name: 🛠 Enable Corepack + Prepare pnpm
         run: |
           corepack enable
-          # Activamos la última v9+ para que entienda lockfileVersion 9.0
-          corepack prepare pnpm@latest --activate
-          echo "PNPM version:"
+          corepack prepare pnpm@8.15.4 --activate
           pnpm -v
 
-      # 4) Instalar dependencias
-      - name: 📦 Install dependencies
-        run: pnpm install --frozen-lockfile
+      - name: 🔧 Add pnpm to PATH manually
+        run: echo "${HOME}/.local/share/pnpm" >> $GITHUB_PATH
 
-      # 5) Tareas Nx
+      - name: 📦 Install dependencies
+        run: |
+          if [ -f pnpm-lock.yaml ]; then
+            pnpm install --frozen-lockfile
+          else
+            pnpm install
+          fi
+
       - name: 🔍 Lint
         run: pnpm lint
 
@@ -56,9 +57,8 @@ jobs:
       # 6) Empaquetar extensión
       - name: 📦 Pack extension ZIP
         run: |
-          cd dist/apps/extension
-          zip -r ../../vizblock-extension.zip .
-          echo "ARTIFACT_PATH=$(pwd)/../../vizblock-extension.zip" >> $GITHUB_ENV
+          zip -r vizblock-extension.zip dist/apps/extension
+          echo "ARTIFACT_PATH=vizblock-extension.zip" >> $GITHUB_ENV
 
       - name: 🚀 Upload artifact
         uses: actions/upload-artifact@v4
