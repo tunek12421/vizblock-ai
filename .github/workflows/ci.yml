@@ -25,20 +25,21 @@ jobs:
           path: ~/.pnpm-store
           key: ${{ runner.os }}-pnpm-${{ hashFiles('pnpm-lock.yaml') }}
 
-      # 3) Instalar Node 20 + pnpm
-      - name: 🟢  Setup Node LTS 20
+      # 3) Instalar Node 20 + activar pnpm con corepack
+      - name: 🟢 Setup Node LTS 20
         uses: actions/setup-node@v4
         with:
           node-version: '20'
           cache: 'pnpm'
 
-      - name: ⬇️  Install pnpm
-        run: npm install -g pnpm
-
-      - name: 📦  Install deps
+      - name: 🛠️ Enable Corepack + Activate pnpm
         run: |
           corepack enable
-          pnpm install --frozen-lockfile
+          corepack prepare pnpm@latest --activate
+
+      - name: 📦 Install dependencies
+        run: pnpm install --frozen-lockfile
+
 
       # 4) Lint + test + build (Nx tasks paralelos)
       - name: 🔍  Lint
