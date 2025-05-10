@@ -4,8 +4,7 @@ name: CI
 on:
   push:
     branches: [main]
-    # también disparar en pushes de cualquier tag (para el job de release)
-    tags: ['*']
+    tags: ['*']      # para que se dispare el job de release al pushear tags
   pull_request:
     branches: [main]
 
@@ -31,11 +30,10 @@ jobs:
       - name: ♻️ Cache pnpm store
         uses: actions/cache@v4
         with:
-          # ruta por defecto de la store de Corepack+pnpm
           path: ~/.local/share/pnpm/store
           key: ${{ runner.os }}-pnpm-${{ hashFiles('pnpm-lock.yaml') }}
 
-      # 4) Enable Corepack (trae pnpm CLI ready-to-use)
+      # 4) Enable Corepack (trae pnpm CLI)
       - name: 🛠 Enable Corepack
         run: |
           corepack enable
@@ -46,11 +44,11 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       # 6) Lint / Test / Build
-      - name: 🔍 Lint
-        run: pnpm lint
+      - name: 🔍 Lint all projects
+        run: pnpm nx run-many --target=lint --all
 
-      - name: 🧪 Test (Vitest)
-        run: pnpm test -- --run
+      - name: 🧪 Test all projects
+        run: pnpm nx run-many --target=test --all
 
       - name: 🛠️ Build extension app
         run: pnpm nx build extension
