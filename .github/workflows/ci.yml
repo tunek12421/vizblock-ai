@@ -44,12 +44,14 @@ jobs:
       # 4) Instalar dependencias (con ruta absoluta)
       - name: 📦 Install dependencies
         run: |
-          cd ${{ github.workspace }}
-          if [ -f ./pnpm-lock.yaml ]; then
+          if [ -f pnpm-lock.yaml ]; then
+            echo "Lockfile found, installing frozen..."
             pnpm install --frozen-lockfile
           else
+            echo "No lockfile found, doing normal install..."
             pnpm install
           fi
+
 
       # 5) Tareas Nx
       - name: 🔍 Lint
