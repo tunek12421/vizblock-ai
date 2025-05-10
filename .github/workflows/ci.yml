@@ -25,17 +25,17 @@ jobs:
           path: ~/.pnpm-store
           key: ${{ runner.os }}-pnpm-${{ hashFiles('pnpm-lock.yaml') }}
 
-      # 3) Instalar Node 20 + activar pnpm con corepack
+      # 3) Instalar Node 20 + activar pnpm
       - name: 🟢 Setup Node LTS 20
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
-          cache: 'pnpm'
+          node-version: '20'  # ❌ No usar: cache: pnpm
 
-      - name: 🛠️ Enable Corepack + Activate pnpm
+      - name: 🛠 Enable Corepack + Prepare pnpm
         run: |
           corepack enable
           corepack prepare pnpm@latest --activate
+          pnpm -v  # Debug para confirmar que se instaló correctamente
 
       - name: 📦 Install dependencies
         run: pnpm install --frozen-lockfile
