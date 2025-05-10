@@ -22,24 +22,20 @@ jobs:
       - name: ♻️  Cache pnpm store
         uses: actions/cache@v4
         with:
-          path: ~/.local/share/pnpm/store
+          path: ~/.pnpm-store
           key: ${{ runner.os }}-pnpm-${{ hashFiles('pnpm-lock.yaml') }}
 
-      # 3) Instalar Node 20 + activar pnpm
-      - name: 🟢 Setup Node LTS 20
+      # 3) Instalar Node 20 + pnpm
+      - name: 🟢  Setup Node LTS 20
         uses: actions/setup-node@v4
         with:
-          node-version: '20'  # ❌ No usar: cache: pnpm
+          node-version: '20'
+          cache: 'pnpm'
 
-      - name: 🛠 Enable Corepack + Prepare pnpm
+      - name: 📦  Install deps
         run: |
           corepack enable
-          corepack prepare pnpm@latest --activate
-          pnpm -v  # Debug para confirmar que se instaló correctamente
-
-      - name: 📦 Install dependencies
-        run: pnpm install --frozen-lockfile
-
+          pnpm install --frozen-lockfile
 
       # 4) Lint + test + build (Nx tasks paralelos)
       - name: 🔍  Lint
@@ -48,9 +44,8 @@ jobs:
       - name: 🧪  Test (Vitest)
         run: pnpm test -- --run
 
-      - name: 🛠️ Build extension app
-        run: pnpm nx build extension
-
+      - name: 🛠️  Build (todos los targets)
+        run: pnpm build
 
       # 5) Empaquetar extensión (CRX/ZIP)
       - name: 📦  Pack extension ZIP
