@@ -23,9 +23,9 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ~/.local/share/pnpm/store
-          key: ${{ runner.os }}-pnpm-${{ hashFiles('**/pnpm-lock.yaml') }}
+          key: ${{ runner.os }}-pnpm-${{ hashFiles('pnpm-lock.yaml') }}
 
-      # 3) Setup Node + pnpm
+      # 3) Setup Node + pnpm (versiones compatibles con lockfile v9)
       - name: 🟢 Setup Node LTS 20
         uses: actions/setup-node@v4
         with:
@@ -34,24 +34,14 @@ jobs:
       - name: 🛠 Enable Corepack + Prepare pnpm
         run: |
           corepack enable
-          corepack prepare pnpm@8.15.4 --activate
-          echo "Using PNPM version:"
+          # Activamos la última v9+ para que entienda lockfileVersion 9.0
+          corepack prepare pnpm@latest --activate
+          echo "PNPM version:"
           pnpm -v
 
-      - name: 🔧 Add pnpm to PATH manually
-        run: echo "${HOME}/.local/share/pnpm" >> $GITHUB_PATH
-
-      # 4) Instalar dependencias (con ruta absoluta)
+      # 4) Instalar dependencias
       - name: 📦 Install dependencies
-        run: |
-          if [ -f pnpm-lock.yaml ]; then
-            echo "Lockfile found, installing frozen..."
-            pnpm install --frozen-lockfile
-          else
-            echo "No lockfile found, doing normal install..."
-            pnpm install
-          fi
-
+        run: pnpm install --frozen-lockfile
 
       # 5) Tareas Nx
       - name: 🔍 Lint
