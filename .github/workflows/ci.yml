@@ -19,24 +19,31 @@ jobs:
       - name: ⬇️ Checkout
         uses: actions/checkout@v4
 
-      # 2) Setup Node 20 + cache pnpm store
-      - name: 🟢 Setup Node LTS 20 + pnpm cache
+      # 2) Setup Node LTS 20 (sin cache: pnpm)
+      - name: 🟢 Setup Node LTS 20
         uses: actions/setup-node@v4
         with:
           node-version: '20'
-          cache: 'pnpm'
 
-      # 3) Enable Corepack para que pnpm esté disponible
-      - name: 🛠️ Enable Corepack
+      # 3) Cache pnpm store manual
+      - name: ♻️ Cache pnpm store
+        uses: actions/cache@v4
+        with:
+          # ruta por defecto de la store de Corepack+pnpm
+          path: ~/.local/share/pnpm/store
+          key: ${{ runner.os }}-pnpm-${{ hashFiles('pnpm-lock.yaml') }}
+
+      # 4) Enable Corepack (trae pnpm CLI ready-to-use)
+      - name: 🛠 Enable Corepack
         run: |
           corepack enable
-          echo "PNPM version: $(pnpm -v)"
+          echo "pnpm version: $(pnpm -v)"
 
-      # 4) Instalar dependencias
+      # 5) Instalar dependencias
       - name: 📦 Install dependencies
-        run: pnpm install
+        run: pnpm install --frozen-lockfile
 
-      # 5) Lint, Test y Build
+      # 6) Lint / Test / Build
       - name: 🔍 Lint
         run: pnpm lint
 
@@ -46,7 +53,7 @@ jobs:
       - name: 🛠️ Build extension app
         run: pnpm nx build extension
 
-      # 6) Empaquetar y subir artefacto
+      # 7) Empaquetar extensión
       - name: 📦 Pack extension ZIP
         run: |
           zip -r vizblock-extension.zip dist/apps/extension
