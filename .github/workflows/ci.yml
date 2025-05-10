@@ -23,7 +23,7 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ~/.local/share/pnpm/store
-          key: ${{ runner.os }}-pnpm-${{ hashFiles('pnpm-lock.yaml') }}
+          key: ${{ runner.os }}-pnpm-${{ hashFiles('**/pnpm-lock.yaml') }}
 
       # 3) Setup Node + pnpm
       - name: 🟢 Setup Node LTS 20
@@ -43,7 +43,12 @@ jobs:
 
       # 4) Instalar dependencias
       - name: 📦 Install dependencies
-        run: pnpm install --frozen-lockfile
+        run: |
+          if [ -f pnpm-lock.yaml ]; then
+            pnpm install --frozen-lockfile
+          else
+            pnpm install
+          fi
 
       # 5) Tareas Nx
       - name: 🔍 Lint
