@@ -41,10 +41,11 @@ jobs:
       - name: 🔧 Add pnpm to PATH manually
         run: echo "${HOME}/.local/share/pnpm" >> $GITHUB_PATH
 
-      # 4) Instalar dependencias
+      # 4) Instalar dependencias (con ruta absoluta)
       - name: 📦 Install dependencies
         run: |
-          if [ -f pnpm-lock.yaml ]; then
+          cd ${{ github.workspace }}
+          if [ -f ./pnpm-lock.yaml ]; then
             pnpm install --frozen-lockfile
           else
             pnpm install
