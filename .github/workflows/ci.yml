@@ -1,3 +1,4 @@
+# .github/workflows/ci.yml
 name: CI
 
 on:
@@ -18,18 +19,24 @@ jobs:
       - name: ⬇️ Checkout
         uses: actions/checkout@v4
 
-      # 2) Setup Node.js y pnpm (cache automático)
-      - name: 🟢 Setup Node LTS 20 + pnpm
+      # 2) Setup Node 20 + cache pnpm store
+      - name: 🟢 Setup Node LTS 20 + pnpm cache
         uses: actions/setup-node@v4
         with:
           node-version: '20'
           cache: 'pnpm'
 
-      # 3) Instalar dependencias (sin frozen-lockfile)
+      # 3) Enable Corepack para que pnpm esté disponible
+      - name: 🛠️ Enable Corepack
+        run: |
+          corepack enable
+          echo "PNPM version: $(pnpm -v)"
+
+      # 4) Instalar dependencias
       - name: 📦 Install dependencies
         run: pnpm install
 
-      # 4) Tareas Nx
+      # 5) Lint, Test y Build
       - name: 🔍 Lint
         run: pnpm lint
 
@@ -39,7 +46,7 @@ jobs:
       - name: 🛠️ Build extension app
         run: pnpm nx build extension
 
-      # 5) Empaquetar extensión
+      # 6) Empaquetar y subir artefacto
       - name: 📦 Pack extension ZIP
         run: |
           zip -r vizblock-extension.zip dist/apps/extension
