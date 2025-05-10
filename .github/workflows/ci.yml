@@ -1,3 +1,4 @@
+# .github/workflows/ci.yml
 name: CI
 
 on:
@@ -37,14 +38,11 @@ jobs:
       - name: 🔧 Add pnpm to PATH manually
         run: echo "${HOME}/.local/share/pnpm" >> $GITHUB_PATH
 
+      ## 4) Instalación de dependencias SIN frozen-lockfile
       - name: 📦 Install dependencies
-        run: |
-          if [ -f pnpm-lock.yaml ]; then
-            pnpm install --frozen-lockfile
-          else
-            pnpm install
-          fi
+        run: pnpm install
 
+      ## 5) Tareas Nx
       - name: 🔍 Lint
         run: pnpm lint
 
@@ -54,7 +52,7 @@ jobs:
       - name: 🛠️ Build extension app
         run: pnpm nx build extension
 
-      # 6) Empaquetar extensión
+      ## 6) Empaquetar extensión
       - name: 📦 Pack extension ZIP
         run: |
           zip -r vizblock-extension.zip dist/apps/extension
