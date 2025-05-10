@@ -1,4 +1,3 @@
-# .github/workflows/ci.yml
 name: CI
 
 on:
@@ -15,34 +14,22 @@ jobs:
         shell: bash
 
     steps:
+      # 1) Checkout
       - name: ⬇️ Checkout
         uses: actions/checkout@v4
 
-      - name: ♻️ Cache pnpm store
-        uses: actions/cache@v4
-        with:
-          path: ~/.local/share/pnpm/store
-          key: ${{ runner.os }}-pnpm-${{ hashFiles('**/pnpm-lock.yaml') }}
-
-      - name: 🟢 Setup Node LTS 20
+      # 2) Setup Node.js y pnpm (cache automático)
+      - name: 🟢 Setup Node LTS 20 + pnpm
         uses: actions/setup-node@v4
         with:
           node-version: '20'
+          cache: 'pnpm'
 
-      - name: 🛠 Enable Corepack + Prepare pnpm
-        run: |
-          corepack enable
-          corepack prepare pnpm@8.15.4 --activate
-          pnpm -v
-
-      - name: 🔧 Add pnpm to PATH manually
-        run: echo "${HOME}/.local/share/pnpm" >> $GITHUB_PATH
-
-      ## 4) Instalación de dependencias SIN frozen-lockfile
+      # 3) Instalar dependencias (sin frozen-lockfile)
       - name: 📦 Install dependencies
         run: pnpm install
 
-      ## 5) Tareas Nx
+      # 4) Tareas Nx
       - name: 🔍 Lint
         run: pnpm lint
 
@@ -52,7 +39,7 @@ jobs:
       - name: 🛠️ Build extension app
         run: pnpm nx build extension
 
-      ## 6) Empaquetar extensión
+      # 5) Empaquetar extensión
       - name: 📦 Pack extension ZIP
         run: |
           zip -r vizblock-extension.zip dist/apps/extension
