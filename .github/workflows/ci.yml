@@ -34,7 +34,9 @@ jobs:
       - name: 🛠 Enable Corepack + Prepare pnpm
         run: |
           corepack enable
-          corepack prepare pnpm@latest --activate
+          corepack prepare pnpm@8.15.4 --activate
+          echo "Using PNPM version:"
+          pnpm -v
 
       - name: 🔧 Add pnpm to PATH manually
         run: echo "${HOME}/.local/share/pnpm" >> $GITHUB_PATH
