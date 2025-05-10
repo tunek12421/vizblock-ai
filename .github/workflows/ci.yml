@@ -4,6 +4,8 @@ name: CI
 on:
   push:
     branches: [main]
+    # también disparar en pushes de cualquier tag (para el job de release)
+    tags: ['*']
   pull_request:
     branches: [main]
 
