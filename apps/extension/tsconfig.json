@@ -1,0 +1,14 @@
+{
+    "extends": "../../tsconfig.base.json",
+    "compilerOptions": {
+      "outDir": "../../dist/out-tsc",
+      "types": ["vitest/globals", "chrome"]
+    },
+    "include": [
+      "src",
+      "popup",
+      "background.ts",
+      "content-script.ts"
+    ]
+  }
+  

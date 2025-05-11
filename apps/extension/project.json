@@ -22,10 +22,10 @@
     },
     "test": {
       "executor": "@nx/vite:test",
-      "outputs": [],                  
+      "outputs": [],
       "options": {
-        "tsConfig": "tsconfig.base.json", 
-        "passWithNoTests": true           
+        "tsConfig": "../../tsconfig.base.json",
+        "passWithNoTests": true
       }
     },
     "lint": {
